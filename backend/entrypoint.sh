@@ -1,29 +1,20 @@
 #!/bin/bash
 
-/opt/jboss/wildfly/bin/standalone.sh -b 0.0.0.0 --admin-only &
+echo "Configurando datasource do PostgreSQL offline..."
 
-echo "Aguardando WildFly (admin-only) iniciar..."
-while ! /opt/jboss/wildfly/bin/jboss-cli.sh -c ":read-attribute(name=server-state)" 2>&1 | grep -q "running"; do
-    sleep 1
-done
-
-echo "Configurando datasource do PostgreSQL..."
-/opt/jboss/wildfly/bin/jboss-cli.sh --connect << EOF
+/opt/jboss/wildfly/bin/jboss-cli.sh --file=/dev/stdin << EOF
+embed-server --std-out=echo --server-config=standalone.xml
 batch
 /subsystem=datasources/jdbc-driver=postgresql:add(driver-name=postgresql,driver-module-name=org.postgres,driver-class-name=org.postgresql.Driver)
 data-source add --name=PostgresDS --jndi-name=java:jboss/datasources/PostgresDS --driver-name=postgresql --connection-url=jdbc:postgresql://${DB_HOST}/${DB_NAME} --user-name=${DB_USER} --password=${DB_PASSWORD} --validate-on-match=true --check-valid-connection-sql="SELECT 1" --background-validation=false
 run-batch
+stop-embedded-server
 EOF
 
 if [ $? -ne 0 ]; then
     echo "Falha ao configurar o datasource."
-    /opt/jboss/wildfly/bin/jboss-cli.sh -c ":shutdown"
     exit 1
 fi
 
-echo "Configuração concluída. Reiniciando WildFly em modo normal..."
-/opt/jboss/wildfly/bin/jboss-cli.sh -c ":shutdown"
-
-sleep 2
-
+echo "Configuração offline concluída. Iniciando WildFly..."
 exec /opt/jboss/wildfly/bin/standalone.sh -b 0.0.0.0
