@@ -11,8 +11,8 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.release>21</maven.compiler.release>
-    <jakartaee.version>11.0.0</jakartaee.version>
-    <version.wildfly.plugin>4.2.2.Final</version.wildfly.plugin>
+    <jakartaee.version>11.0.0-M5</jakartaee.version>
+    <version.wildfly.plugin>5.0.0.Final</version.wildfly.plugin>
   </properties>
   <dependencies>
     <dependency>
@@ -46,7 +46,7 @@
         <artifactId>wildfly-maven-plugin</artifactId>
         <version>${version.wildfly.plugin}</version>
         <configuration>
-          <version>33.0.1.Final</version>
+          <version>35.0.1.Final</version>
         </configuration>
       </plugin>
     </plugins>
