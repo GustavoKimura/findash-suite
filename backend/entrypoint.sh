@@ -9,7 +9,7 @@ done
 
 echo "Configurando datasource do PostgreSQL..."
 /opt/jboss/wildfly/bin/jboss-cli.sh --connect \
-"module add --name=org.postgres --resources=/opt/jboss/wildfly/standalone/deployments/ROOT.war/WEB-INF/lib/postgresql-42.7.3.jar --dependencies=jakarta.jdbc.api,jakarta.transaction.api; \
+"module add --name=org.postgres --resources=/opt/jboss/drivers/postgresql-42.7.3.jar --dependencies=jakarta.jdbc.api,jakarta.transaction.api; \
 /subsystem=datasources/jdbc-driver=postgresql:add(driver-name=postgresql,driver-module-name=org.postgres,driver-class-name=org.postgresql.Driver); \
 data-source add \
 --name=PostgresDS \
