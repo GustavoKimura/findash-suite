@@ -12,8 +12,12 @@ FROM quay.io/wildfly/wildfly:32.0.1.Final-jdk21
 
 COPY --from=build /usr/src/app/target/ROOT.war /opt/jboss/wildfly/standalone/deployments/
 
+USER root
+
 COPY entrypoint.sh /opt/jboss/
-RUN chmod +x /opt/jboss/entrypoint.sh
+RUN chown jboss:jboss /opt/jboss/entrypoint.sh && chmod +x /opt/jboss/entrypoint.sh
+
+USER jboss
 
 EXPOSE 8080
 
