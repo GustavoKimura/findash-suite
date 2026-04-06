@@ -1,0 +1,35 @@
+services:
+  - type: web
+    name: findash-api
+    env: docker
+    repo: https://github.com/GustavoKimura/findash-suite.git
+    region: oregon
+    plan: free
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    healthCheckPath: /api/transactions
+    envVars:
+      - fromDatabase:
+          name: findashdb
+          property: host
+        key: DB_HOST
+      - fromDatabase:
+          name: findashdb
+          property: database
+        key: DB_NAME
+      - fromDatabase:
+          name: findashdb
+          property: user
+        key: DB_USER
+      - fromDatabase:
+          name: findashdb
+          property: password
+        key: DB_PASSWORD
+    autoDeploy: true
+
+databases:
+  - name: findashdb
+    databaseName: findashdb
+    user: findash_user
+    region: oregon
+    plan: free

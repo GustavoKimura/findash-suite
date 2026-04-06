@@ -1,0 +1,16 @@
+# IDE
+.idea/
+.vscode/
+
+# Build artifacts
+/backend/target/
+/frontend/dist/
+/frontend/node_modules/
+/frontend/.angular/
+
+# System
+.DS_Store
+Thumbs.db
+
+# Log files
+*.log
