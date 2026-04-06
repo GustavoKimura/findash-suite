@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  apiUrl: 'https://findash-api-SERVICE_URL.onrender.com/api',
+  apiUrl: 'https://findash-api-aa4r.onrender.com/api',
 };
