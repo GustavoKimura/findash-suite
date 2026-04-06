@@ -1,3 +1,5 @@
+#!/bin/bash
+
 /opt/jboss/wildfly/bin/standalone.sh -b 0.0.0.0 --admin-only &
 
 echo "Aguardando WildFly (admin-only) iniciar..."

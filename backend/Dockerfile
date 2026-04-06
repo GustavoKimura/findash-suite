@@ -8,7 +8,7 @@ RUN mvn dependency:go-offline -B
 COPY src ./src
 RUN mvn package
 
-FROM quay.io/wildfly/wildfly:32.0.1.Final-jdk21
+FROM quay.io/wildfly/wildfly:33.0.1.Final-jdk21
 
 COPY --from=build /usr/src/app/target/ROOT.war /opt/jboss/wildfly/standalone/deployments/
 
