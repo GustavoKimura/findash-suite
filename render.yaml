@@ -1,7 +1,7 @@
 services:
   - type: web
     name: findash-api
-    env: docker
+    runtime: docker
     repo: https://github.com/GustavoKimura/findash-suite.git
     region: oregon
     plan: free

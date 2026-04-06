@@ -14,3 +14,8 @@ Thumbs.db
 
 # Log files
 *.log
+
+# Personal files
+project-dumper.ps1
+project_content.txt
+project_structure.txt
