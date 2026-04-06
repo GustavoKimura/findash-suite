@@ -10,7 +10,6 @@ done
 echo "Configurando datasource do PostgreSQL..."
 /opt/jboss/wildfly/bin/jboss-cli.sh --connect << EOF
 batch
-module add --name=org.postgres --resources=/opt/jboss/drivers/postgresql-42.7.3.jar --dependencies=jakarta.jdbc.api,jakarta.transaction.api
 /subsystem=datasources/jdbc-driver=postgresql:add(driver-name=postgresql,driver-module-name=org.postgres,driver-class-name=org.postgresql.Driver)
 data-source add --name=PostgresDS --jndi-name=java:jboss/datasources/PostgresDS --driver-name=postgresql --connection-url=jdbc:postgresql://${DB_HOST}/${DB_NAME} --user-name=${DB_USER} --password=${DB_PASSWORD} --validate-on-match=true --check-valid-connection-sql="SELECT 1" --background-validation=false
 run-batch

@@ -11,13 +11,15 @@ RUN mvn package
 
 FROM quay.io/wildfly/wildfly:33.0.1.Final-jdk21
 
-COPY --from=build /usr/src/app/drivers/postgresql-42.7.3.jar /opt/jboss/drivers/
 COPY --from=build /usr/src/app/target/ROOT.war /opt/jboss/wildfly/standalone/deployments/
+COPY --from=build /usr/src/app/drivers/postgresql-42.7.3.jar /opt/jboss/wildfly/modules/system/layers/base/org/postgres/main/
+COPY module.xml /opt/jboss/wildfly/modules/system/layers/base/org/postgres/main/
 
 USER root
 
 COPY entrypoint.sh /opt/jboss/
-RUN chown jboss:jboss /opt/jboss/entrypoint.sh /opt/jboss/drivers/postgresql-42.7.3.jar && \
+RUN chown -R jboss:jboss /opt/jboss/wildfly/modules/system/layers/base/org/postgres/ && \
+  chown jboss:jboss /opt/jboss/entrypoint.sh && \
   chmod +x /opt/jboss/entrypoint.sh
 
 USER jboss
