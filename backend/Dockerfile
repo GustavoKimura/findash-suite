@@ -4,26 +4,24 @@ WORKDIR /usr/src/app
 
 COPY pom.xml .
 RUN mvn dependency:go-offline -B
-RUN mvn dependency:copy -Dartifact=org.postgresql:postgresql:42.7.3 -DoutputDirectory=./drivers
 
 COPY src ./src
-RUN mvn package
+RUN mvn package -DskipTests
 
-FROM quay.io/wildfly/wildfly:33.0.1.Final-jdk21
-
-COPY --from=build /usr/src/app/target/ROOT.war /opt/jboss/wildfly/standalone/deployments/
-COPY --from=build /usr/src/app/drivers/postgresql-42.7.3.jar /opt/jboss/wildfly/modules/system/layers/base/org/postgres/main/
-COPY module.xml /opt/jboss/wildfly/modules/system/layers/base/org/postgres/main/
+FROM quay.io/wildfly/wildfly-s2i-jdk21:latest
 
 USER root
+RUN galaunch.sh install org.wildfly:wildfly-galleon-pack:33.0.1.Final#galleon/postgresql-datasource
+COPY --from=build /usr/src/app/target/ROOT.war /opt/server/standalone/deployments/
+RUN chown -R 1001:0 /opt/server && chmod -R g+rw /opt/server
 
-COPY entrypoint.sh /opt/jboss/
-RUN chown -R jboss:jboss /opt/jboss/wildfly/modules/system/layers/base/org/postgres/ && \
-  chown jboss:jboss /opt/jboss/entrypoint.sh && \
-  chmod +x /opt/jboss/entrypoint.sh
+USER 1001
 
-USER jboss
+ENV JDBC_URL="jdbc:postgresql://${DB_HOST}/${DB_NAME}" \
+  JDBC_USER="${DB_USER}" \
+  JDBC_PASSWORD="${DB_PASSWORD}" \
+  DATASOURCES_NAMES="PostgresDS" \
+  PostgresDS_JNDI_NAME="java:jboss/datasources/PostgresDS" \
+  PostgresDS_DRIVER_NAME="postgresql"
 
 EXPOSE 8080
-
-ENTRYPOINT [ "/opt/jboss/entrypoint.sh" ]
