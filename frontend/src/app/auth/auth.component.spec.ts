@@ -28,6 +28,7 @@ describe('AuthComponent', () => {
 
     if (!isLoginView) {
       fireEvent.click(screen.getByText('Registre-se'));
+      component.fixture.detectChanges();
       await component.fixture.whenStable();
     }
     return component;
@@ -46,20 +47,23 @@ describe('AuthComponent', () => {
   it('should switch to register view when "Registre-se" is clicked', async () => {
     const { fixture } = await setup();
     fireEvent.click(screen.getByText('Registre-se'));
+    fixture.detectChanges();
     const container = fixture.nativeElement.querySelector('.auth-container');
     expect(container).toHaveClass('is-register');
   });
 
   it('should call authService.login and navigate on successful login', async () => {
     mockAuthService.login.mockReturnValue(of({}));
-    await setup();
+    const { fixture } = await setup();
 
-    fireEvent.change(screen.getAllByPlaceholderText('Usuário')[0], {
+    fireEvent.input(screen.getAllByPlaceholderText('Usuário')[0], {
       target: { value: 'test' },
     });
-    fireEvent.change(screen.getAllByPlaceholderText('Senha')[0], {
+    fireEvent.input(screen.getAllByPlaceholderText('Senha')[0], {
       target: { value: 'password' },
     });
+    fixture.detectChanges();
+
     fireEvent.click(screen.getByRole('button', { name: 'Entrar' }));
 
     expect(mockAuthService.login).toHaveBeenCalledWith('test', 'password');
@@ -71,17 +75,20 @@ describe('AuthComponent', () => {
       error: { error: 'Invalid credentials' },
     });
     mockAuthService.login.mockReturnValue(throwError(() => errorResponse));
-    await setup();
+    const { fixture } = await setup();
 
-    fireEvent.change(screen.getAllByPlaceholderText('Usuário')[0], {
+    fireEvent.input(screen.getAllByPlaceholderText('Usuário')[0], {
       target: { value: 'test' },
     });
-    fireEvent.change(screen.getAllByPlaceholderText('Senha')[0], {
+    fireEvent.input(screen.getAllByPlaceholderText('Senha')[0], {
       target: { value: 'password' },
     });
-    fireEvent.click(screen.getByRole('button', { name: 'Entrar' }));
+    fixture.detectChanges();
 
-    expect(await screen.findByText('Invalid credentials')).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'Entrar' }));
+    fixture.detectChanges();
+
+    expect(screen.getAllByText('Invalid credentials')[0]).toBeInTheDocument();
     expect(mockRouter.navigate).not.toHaveBeenCalled();
   });
 
@@ -89,18 +96,21 @@ describe('AuthComponent', () => {
     mockAuthService.register.mockReturnValue(of({}));
     const { fixture } = await setup(false);
 
-    fireEvent.change(screen.getAllByPlaceholderText('Usuário')[1], {
+    fireEvent.input(screen.getAllByPlaceholderText('Usuário')[1], {
       target: { value: 'newuser' },
     });
-    fireEvent.change(screen.getAllByPlaceholderText('Senha')[1], {
+    fireEvent.input(screen.getAllByPlaceholderText('Senha')[1], {
       target: { value: 'password123' },
     });
-    fireEvent.change(screen.getByPlaceholderText('Repita a Senha'), {
+    fireEvent.input(screen.getByPlaceholderText('Repita a Senha'), {
       target: { value: 'password123' },
     });
+    fixture.detectChanges();
+
     fireEvent.click(screen.getByRole('button', { name: 'Registrar' }));
 
     await fixture.whenStable();
+    fixture.detectChanges();
 
     expect(mockAuthService.register).toHaveBeenCalledWith(
       'newuser',
@@ -117,18 +127,17 @@ describe('AuthComponent', () => {
   });
 
   it('should display an error if passwords do not match on registration', async () => {
-    await setup(false);
+    const { fixture } = await setup(false);
 
-    fireEvent.change(screen.getAllByPlaceholderText('Senha')[1], {
+    fireEvent.input(screen.getAllByPlaceholderText('Senha')[1], {
       target: { value: 'password123' },
     });
-    fireEvent.change(screen.getByPlaceholderText('Repita a Senha'), {
+    fireEvent.input(screen.getByPlaceholderText('Repita a Senha'), {
       target: { value: 'password456' },
     });
     fireEvent.blur(screen.getByPlaceholderText('Repita a Senha'));
+    fixture.detectChanges();
 
-    expect(
-      await screen.findByText('As senhas não coincidem.'),
-    ).toBeInTheDocument();
+    expect(screen.getByText('As senhas não coincidem.')).toBeInTheDocument();
   });
 });
