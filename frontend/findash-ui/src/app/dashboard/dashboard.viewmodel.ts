@@ -34,8 +34,9 @@ export class DashboardViewModel {
   public totalIncome = this.transactionService.totalIncome;
   public totalExpenses = this.transactionService.totalExpenses;
   public balance = this.transactionService.balance;
-
   public sortedTransactions = this.transactionService.transactions;
+  public isFetching = this.transactionService.isFetching;
+  public isMutating = this.transactionService.isMutating;
 
   public chartData = computed((): ChartConfiguration<'doughnut'>['data'] => {
     const expenses = this.transactionService.expensesByCategory();

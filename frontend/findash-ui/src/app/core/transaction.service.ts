@@ -2,8 +2,7 @@ import { computed, Injectable, signal, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Transaction } from './transaction.model';
 import { environment } from '../../environments/environment';
-import { toSignal, toObservable } from '@angular/core/rxjs-interop';
-import { switchMap, tap } from 'rxjs';
+import { finalize } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -13,16 +12,9 @@ export class TransactionService {
   private apiUrl = environment.apiUrl + '/transactions';
 
   private transactionsState = signal<Transaction[]>([]);
-  private refreshTrigger = signal<void>(undefined);
 
-  private apiTransactions$ = toObservable(this.refreshTrigger).pipe(
-    switchMap(() => this.http.get<Transaction[]>(this.apiUrl)),
-    tap((transactions) => this.transactionsState.set(transactions)),
-  );
-
-  private apiTransactions = toSignal(this.apiTransactions$, {
-    initialValue: [],
-  });
+  public isFetching = signal(false);
+  public isMutating = signal(false);
 
   public transactions = this.transactionsState.asReadonly();
 
@@ -56,20 +48,34 @@ export class TransactionService {
   }
 
   refresh(): void {
-    this.refreshTrigger.set();
+    this.isFetching.set(true);
+    this.http
+      .get<Transaction[]>(this.apiUrl)
+      .pipe(finalize(() => this.isFetching.set(false)))
+      .subscribe((transactions) => this.transactionsState.set(transactions));
   }
 
   addTransaction(transaction: Omit<Transaction, 'id'>): void {
-    this.http.post(this.apiUrl, transaction).subscribe(() => this.refresh());
+    this.isMutating.set(true);
+    this.http
+      .post(this.apiUrl, transaction)
+      .pipe(finalize(() => this.isMutating.set(false)))
+      .subscribe(() => this.refresh());
   }
 
   updateTransaction(updatedTransaction: Transaction): void {
+    this.isMutating.set(true);
     this.http
       .put(`${this.apiUrl}/${updatedTransaction.id}`, updatedTransaction)
+      .pipe(finalize(() => this.isMutating.set(false)))
       .subscribe(() => this.refresh());
   }
 
   deleteTransaction(id: string): void {
-    this.http.delete(`${this.apiUrl}/${id}`).subscribe(() => this.refresh());
+    this.isMutating.set(true);
+    this.http
+      .delete(`${this.apiUrl}/${id}`)
+      .pipe(finalize(() => this.isMutating.set(false)))
+      .subscribe(() => this.refresh());
   }
 }
