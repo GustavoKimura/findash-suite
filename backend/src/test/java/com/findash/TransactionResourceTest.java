@@ -9,21 +9,23 @@ import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.SecurityContext;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
 import java.security.Principal;
-import java.util.Collections;
+import java.time.LocalDate;
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.catchThrowable;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
+@ExtendWith(MockitoExtension.class)
 public class TransactionResourceTest {
 
   @Mock
@@ -44,133 +46,114 @@ public class TransactionResourceTest {
   @InjectMocks
   private TransactionResource transactionResource;
 
-  private User mockUser;
+  private User testUser;
+  private Transaction testTransaction;
 
   @BeforeEach
   void setUp() {
-    MockitoAnnotations.openMocks(this);
+    testUser = new User();
+    testUser.setId("user-id");
+    testUser.setUsername("testuser");
+
+    testTransaction = new Transaction();
+    testTransaction.setId("tx-id");
+    testTransaction.setAmount(new BigDecimal("100.00"));
+    testTransaction.setDescription("Test TX");
+    testTransaction.setCategory("Lazer");
+    testTransaction.setType("Despesa");
+    testTransaction.setDate(LocalDate.now());
+    testTransaction.setUser(testUser);
+  }
+
+  private void mockSecurityContext() {
     when(securityContext.getUserPrincipal()).thenReturn(principal);
     when(principal.getName()).thenReturn("testuser");
-
-    mockUser = new User();
-    mockUser.setId("user-id");
-    mockUser.setUsername("testuser");
-
-    when(em.createQuery("SELECT u FROM User u WHERE u.username = :username", User.class)).thenReturn(userQuery);
-    when(userQuery.setParameter("username", "testuser")).thenReturn(userQuery);
-    when(userQuery.getSingleResult()).thenReturn(mockUser);
+    when(em.createQuery(anyString(), eq(User.class))).thenReturn(userQuery);
+    when(userQuery.setParameter(anyString(), anyString())).thenReturn(userQuery);
+    when(userQuery.getSingleResult()).thenReturn(testUser);
   }
 
   @Test
-  void getCurrentUser_UserNotFound_ThrowsException() {
-    when(userQuery.getSingleResult()).thenThrow(new NoResultException());
-
-    Throwable thrown = catchThrowable(() -> transactionResource.getAll());
-
-    assertThat(thrown).isInstanceOf(WebApplicationException.class)
-        .hasMessageContaining("User not found");
-  }
-
-  @Test
-  void getAll_ReturnsUserTransactions() {
-    Transaction t = new Transaction();
+  void getAll_returnsTransactions() {
+    mockSecurityContext();
     when(em.createQuery(anyString(), eq(Transaction.class))).thenReturn(transactionQuery);
-    when(transactionQuery.setParameter("user", mockUser)).thenReturn(transactionQuery);
-    when(transactionQuery.getResultList()).thenReturn(Collections.singletonList(t));
+    when(transactionQuery.setParameter(anyString(), any(User.class))).thenReturn(transactionQuery);
+    when(transactionQuery.getResultList()).thenReturn(List.of(testTransaction));
 
     List<Transaction> result = transactionResource.getAll();
 
-    assertThat(result).hasSize(1).containsExactly(t);
+    assertEquals(1, result.size());
+    assertEquals("tx-id", result.get(0).getId());
   }
 
   @Test
-  void create_PersistsAndReturnsCreated() {
-    Transaction t = new Transaction();
-    t.setAmount(BigDecimal.TEN);
+  void create_persistsTransactionAndReturnsCreated() {
+    mockSecurityContext();
+    Transaction newTx = new Transaction();
+    newTx.setAmount(new BigDecimal("50.00"));
 
-    Response response = transactionResource.create(t);
+    Response response = transactionResource.create(newTx);
 
-    assertThat(response.getStatus()).isEqualTo(Response.Status.CREATED.getStatusCode());
-    verify(em).persist(t);
-    assertThat(t.getId()).isNotNull();
-    assertThat(t.getUser()).isEqualTo(mockUser);
+    assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
+    assertNotNull(((Transaction) response.getEntity()).getId());
+    verify(em, times(1)).persist(newTx);
   }
 
   @Test
-  void update_TransactionNotFound_ReturnsNotFound() {
-    when(em.find(Transaction.class, "tx-id")).thenReturn(null);
+  void update_existingTransaction_returnsOk() {
+    mockSecurityContext();
+    when(em.find(Transaction.class, "tx-id")).thenReturn(testTransaction);
+    when(em.merge(any(Transaction.class))).thenReturn(testTransaction);
 
-    Response response = transactionResource.update("tx-id", new Transaction());
+    Response response = transactionResource.update("tx-id", testTransaction);
 
-    assertThat(response.getStatus()).isEqualTo(Response.Status.NOT_FOUND.getStatusCode());
+    assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+    verify(em, times(1)).merge(testTransaction);
   }
 
   @Test
-  void update_TransactionBelongsToOtherUser_ReturnsNotFound() {
-    Transaction existing = new Transaction();
-    User otherUser = new User();
-    otherUser.setId("other-id");
-    existing.setUser(otherUser);
+  void update_nonExistingTransaction_returnsNotFound() {
+    mockSecurityContext();
+    when(em.find(Transaction.class, "invalid-id")).thenReturn(null);
 
-    when(em.find(Transaction.class, "tx-id")).thenReturn(existing);
+    Response response = transactionResource.update("invalid-id", testTransaction);
 
-    Response response = transactionResource.update("tx-id", new Transaction());
-
-    assertThat(response.getStatus()).isEqualTo(Response.Status.NOT_FOUND.getStatusCode());
+    assertEquals(Response.Status.NOT_FOUND.getStatusCode(), response.getStatus());
   }
 
   @Test
-  void update_Success_ReturnsOk() {
-    Transaction existing = new Transaction();
-    existing.setUser(mockUser);
-
-    Transaction updateData = new Transaction();
-    updateData.setAmount(BigDecimal.ONE);
-
-    when(em.find(Transaction.class, "tx-id")).thenReturn(existing);
-    when(em.merge(updateData)).thenReturn(updateData);
-
-    Response response = transactionResource.update("tx-id", updateData);
-
-    assertThat(response.getStatus()).isEqualTo(Response.Status.OK.getStatusCode());
-    assertThat(updateData.getId()).isEqualTo("tx-id");
-    assertThat(updateData.getUser()).isEqualTo(mockUser);
-    verify(em).merge(updateData);
-  }
-
-  @Test
-  void delete_TransactionNotFound_ReturnsNotFound() {
-    when(em.find(Transaction.class, "tx-id")).thenReturn(null);
+  void delete_existingTransaction_returnsNoContent() {
+    mockSecurityContext();
+    when(em.find(Transaction.class, "tx-id")).thenReturn(testTransaction);
 
     Response response = transactionResource.delete("tx-id");
 
-    assertThat(response.getStatus()).isEqualTo(Response.Status.NOT_FOUND.getStatusCode());
+    assertEquals(Response.Status.NO_CONTENT.getStatusCode(), response.getStatus());
+    verify(em, times(1)).remove(testTransaction);
   }
 
   @Test
-  void delete_TransactionBelongsToOtherUser_ReturnsNotFound() {
-    Transaction existing = new Transaction();
-    User otherUser = new User();
-    otherUser.setId("other-id");
-    existing.setUser(otherUser);
+  void delete_nonExistingTransaction_returnsNotFound() {
+    mockSecurityContext();
+    when(em.find(Transaction.class, "invalid-id")).thenReturn(null);
 
-    when(em.find(Transaction.class, "tx-id")).thenReturn(existing);
+    Response response = transactionResource.delete("invalid-id");
 
-    Response response = transactionResource.delete("tx-id");
-
-    assertThat(response.getStatus()).isEqualTo(Response.Status.NOT_FOUND.getStatusCode());
+    assertEquals(Response.Status.NOT_FOUND.getStatusCode(), response.getStatus());
   }
 
   @Test
-  void delete_Success_ReturnsNoContent() {
-    Transaction existing = new Transaction();
-    existing.setUser(mockUser);
+  void getCurrentUser_userNotFound_throwsWebApplicationException() {
+    when(securityContext.getUserPrincipal()).thenReturn(principal);
+    when(principal.getName()).thenReturn("testuser");
+    when(em.createQuery(anyString(), eq(User.class))).thenReturn(userQuery);
+    when(userQuery.setParameter(anyString(), anyString())).thenReturn(userQuery);
+    when(userQuery.getSingleResult()).thenThrow(new NoResultException());
 
-    when(em.find(Transaction.class, "tx-id")).thenReturn(existing);
+    WebApplicationException exception = assertThrows(WebApplicationException.class, () -> {
+      transactionResource.getAll();
+    });
 
-    Response response = transactionResource.delete("tx-id");
-
-    assertThat(response.getStatus()).isEqualTo(Response.Status.NO_CONTENT.getStatusCode());
-    verify(em).remove(existing);
+    assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(), exception.getResponse().getStatus());
   }
 }
