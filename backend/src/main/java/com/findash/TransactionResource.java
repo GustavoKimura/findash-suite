@@ -1,5 +1,6 @@
 package com.findash;
 
+import com.findash.security.Secured;
 import com.findash.user.User;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.EntityManager;
@@ -19,6 +20,7 @@ import java.util.UUID;
 @ApplicationScoped
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
+@Secured
 public class TransactionResource {
 
   @PersistenceContext

@@ -1,6 +1,7 @@
 package com.findash.security;
 
 import com.findash.auth.TokenService;
+import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.container.ContainerRequestFilter;
@@ -12,7 +13,9 @@ import java.io.IOException;
 import java.security.Principal;
 import java.util.Optional;
 
+@Secured
 @Provider
+@ApplicationScoped
 public class JwtFilter implements ContainerRequestFilter {
 
   @Inject
@@ -20,11 +23,6 @@ public class JwtFilter implements ContainerRequestFilter {
 
   @Override
   public void filter(ContainerRequestContext requestContext) throws IOException {
-    String path = requestContext.getUriInfo().getPath();
-    if (path.startsWith("auth/") || path.equals("health")) {
-      return;
-    }
-
     String authHeader = requestContext.getHeaderString("Authorization");
     if (authHeader == null || !authHeader.startsWith("Bearer ")) {
       requestContext.abortWith(Response.status(Response.Status.UNAUTHORIZED).build());
