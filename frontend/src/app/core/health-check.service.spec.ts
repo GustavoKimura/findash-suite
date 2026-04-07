@@ -1,4 +1,4 @@
-import { TestBed, fakeAsync, tick } from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
 import {
   HttpTestingController,
   provideHttpClientTesting,
@@ -6,6 +6,7 @@ import {
 import { HealthCheckService } from './health-check.service';
 import { environment } from '../../environments/environment';
 import { provideHttpClient } from '@angular/common/http';
+import { vi, describe, beforeEach, afterEach, it, expect } from 'vitest';
 
 describe('HealthCheckService', () => {
   let service: HealthCheckService;
@@ -34,16 +35,19 @@ describe('HealthCheckService', () => {
     expect(service.isApiReady()).toBe(true);
   });
 
-  it('should retry on failure and eventually succeed', fakeAsync(() => {
+  it('should retry on failure and eventually succeed', () => {
+    vi.useFakeTimers();
     expect(service.isApiReady()).toBe(false);
 
     const req1 = httpMock.expectOne(environment.apiUrl + '/health');
     req1.flush('Error', { status: 500, statusText: 'Server Error' });
-    tick(3000);
+
+    vi.advanceTimersByTime(3000);
 
     const req2 = httpMock.expectOne(environment.apiUrl + '/health');
     req2.flush('OK');
 
     expect(service.isApiReady()).toBe(true);
-  }));
+    vi.useRealTimers();
+  });
 });

@@ -38,27 +38,26 @@ describe('AuthComponent', () => {
   });
 
   it('should render the login form by default', async () => {
-    await setup();
-    expect(screen.getByText('Acesse sua conta FinDash')).toBeInTheDocument();
-    expect(
-      screen.queryByText('Crie sua conta FinDash'),
-    ).not.toBeInTheDocument();
+    const { fixture } = await setup();
+    const container = fixture.nativeElement.querySelector('.auth-container');
+    expect(container).not.toHaveClass('is-register');
   });
 
   it('should switch to register view when "Registre-se" is clicked', async () => {
-    await setup();
+    const { fixture } = await setup();
     fireEvent.click(screen.getByText('Registre-se'));
-    expect(screen.getByText('Crie sua conta FinDash')).toBeInTheDocument();
+    const container = fixture.nativeElement.querySelector('.auth-container');
+    expect(container).toHaveClass('is-register');
   });
 
   it('should call authService.login and navigate on successful login', async () => {
     mockAuthService.login.mockReturnValue(of({}));
     await setup();
 
-    fireEvent.change(screen.getByPlaceholderText('Usuário'), {
+    fireEvent.change(screen.getAllByPlaceholderText('Usuário')[0], {
       target: { value: 'test' },
     });
-    fireEvent.change(screen.getByPlaceholderText('Senha'), {
+    fireEvent.change(screen.getAllByPlaceholderText('Senha')[0], {
       target: { value: 'password' },
     });
     fireEvent.click(screen.getByRole('button', { name: 'Entrar' }));
@@ -74,10 +73,10 @@ describe('AuthComponent', () => {
     mockAuthService.login.mockReturnValue(throwError(() => errorResponse));
     await setup();
 
-    fireEvent.change(screen.getByPlaceholderText('Usuário'), {
+    fireEvent.change(screen.getAllByPlaceholderText('Usuário')[0], {
       target: { value: 'test' },
     });
-    fireEvent.change(screen.getByPlaceholderText('Senha'), {
+    fireEvent.change(screen.getAllByPlaceholderText('Senha')[0], {
       target: { value: 'password' },
     });
     fireEvent.click(screen.getByRole('button', { name: 'Entrar' }));
@@ -90,10 +89,10 @@ describe('AuthComponent', () => {
     mockAuthService.register.mockReturnValue(of({}));
     const { fixture } = await setup(false);
 
-    fireEvent.change(screen.getByPlaceholderText('Usuário'), {
+    fireEvent.change(screen.getAllByPlaceholderText('Usuário')[1], {
       target: { value: 'newuser' },
     });
-    fireEvent.change(screen.getByPlaceholderText('Senha'), {
+    fireEvent.change(screen.getAllByPlaceholderText('Senha')[1], {
       target: { value: 'password123' },
     });
     fireEvent.change(screen.getByPlaceholderText('Repita a Senha'), {
@@ -108,19 +107,19 @@ describe('AuthComponent', () => {
       'password123',
       'password123',
     );
-    expect(
-      await screen.findByText('Acesse sua conta FinDash'),
-    ).toBeInTheDocument();
-    const usernameInput = screen.getByPlaceholderText(
+    const container = fixture.nativeElement.querySelector('.auth-container');
+    expect(container).not.toHaveClass('is-register');
+
+    const usernameInput = screen.getAllByPlaceholderText(
       'Usuário',
-    ) as HTMLInputElement;
+    )[0] as HTMLInputElement;
     expect(usernameInput.value).toBe('newuser');
   });
 
   it('should display an error if passwords do not match on registration', async () => {
     await setup(false);
 
-    fireEvent.change(screen.getByPlaceholderText('Senha'), {
+    fireEvent.change(screen.getAllByPlaceholderText('Senha')[1], {
       target: { value: 'password123' },
     });
     fireEvent.change(screen.getByPlaceholderText('Repita a Senha'), {
