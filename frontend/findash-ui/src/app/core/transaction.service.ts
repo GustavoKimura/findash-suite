@@ -1,4 +1,4 @@
-import { computed, Injectable, signal, effect, inject } from '@angular/core';
+import { computed, Injectable, signal, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Transaction } from './transaction.model';
 import { environment } from '../../environments/environment';

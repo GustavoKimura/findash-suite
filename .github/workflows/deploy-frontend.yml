@@ -16,6 +16,9 @@ permissions:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
 
     defaults:
       run:
@@ -28,7 +31,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "20"
+          node-version: "24.x"
           cache: "npm"
           cache-dependency-path: "./frontend/findash-ui/package-lock.json"
 

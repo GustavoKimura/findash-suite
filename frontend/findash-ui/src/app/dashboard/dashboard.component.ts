@@ -1,5 +1,5 @@
-import { CommonModule } from '@angular/common';
 import { Component, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
 import { BaseChartDirective } from 'ng2-charts';
 import { CurrencyMaskDirective } from '../shared/currency-mask.directive';
