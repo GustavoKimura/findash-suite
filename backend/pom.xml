@@ -39,7 +39,6 @@
       <artifactId>nimbus-jose-jwt</artifactId>
       <version>9.37.3</version>
     </dependency>
-    <!-- Test dependencies -->
     <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter-api</artifactId>
@@ -68,6 +67,12 @@
       <groupId>org.assertj</groupId>
       <artifactId>assertj-core</artifactId>
       <version>3.26.3</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.jboss.resteasy</groupId>
+      <artifactId>resteasy-core</artifactId>
+      <version>6.2.8.Final</version>
       <scope>test</scope>
     </dependency>
   </dependencies>

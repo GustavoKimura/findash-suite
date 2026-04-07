@@ -30,7 +30,7 @@ public class TokenService {
           .subject(username)
           .issuer(this.issuer)
           .issueTime(new Date())
-          .expirationTime(new Date(new Date().getTime() + 7200 * 1000)) // 2 hours
+          .expirationTime(new Date(new Date().getTime() + 7200 * 1000))
           .build();
 
       SignedJWT signedJWT = new SignedJWT(header, claimsSet);
