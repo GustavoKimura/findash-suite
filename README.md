@@ -2,19 +2,21 @@
   <h1>📊 FinDash Suite</h1>
   <p><strong>Um dashboard de finanças pessoais moderno, responsivo e robusto.</strong></p>
 
-  [![Cobertura Frontend](.github/badges/frontend-coverage.svg)](https://gustavokimura.github.io/findash-suite/)
-  [![Cobertura Backend](.github/badges/backend-coverage.svg)](https://github.com/GustavoKimura/findash-suite)
-  
-  <br>
+  <p>
+    [![Cobertura Frontend](.github/badges/frontend-coverage.svg)](https://gustavokimura.github.io/findash-suite/)
+    [![Cobertura Backend](.github/badges/backend-coverage.svg)](https://github.com/GustavoKimura/findash-suite)
+  </p>
 
-  [![Angular](https://img.shields.io/badge/Angular-DD0031?style=for-the-badge&logo=angular&logoColor=white)](https://angular.dev/)
-  [![Java](https://img.shields.io/badge/Java-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white)](https://jdk.java.net/21/)
-  [![TailwindCSS](https://img.shields.io/badge/tailwindcss-%2338B2AC.svg?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
+  <p>
+    [![Angular](https://img.shields.io/badge/Angular-DD0031?style=for-the-badge&logo=angular&logoColor=white)](https://angular.dev/)
+    [![Java](https://img.shields.io/badge/Java-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white)](https://jdk.java.net/21/)
+    [![TailwindCSS](https://img.shields.io/badge/tailwindcss-%2338B2AC.svg?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
+  </p>
 </div>
 
 ## 🌐 Demonstração Online
 
-Acesse a aplicação aqui: **[FinDash Suite no GitHub Pages](https://gustavokimura.github.io/findash-suite/)**
+Acesse a aplicação aqui: **<a href="https://gustavokimura.github.io/findash-suite/" target="_blank" rel="noopener noreferrer">FinDash Suite no GitHub Pages</a>**
 
 ## 🚀 Funcionalidades
 
