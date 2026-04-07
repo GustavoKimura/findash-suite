@@ -1,45 +1,65 @@
-# FinDash Suite
+<div align="center">
+  <h1>📊 FinDash Suite</h1>
+  <p><strong>Um dashboard de finanças pessoais moderno, responsivo e robusto.</strong></p>
 
-![Frontend Coverage](.github/badges/frontend-coverage.svg)
-![Backend Coverage](.github/badges/backend-coverage.svg)
+  [![Cobertura Frontend](.github/badges/frontend-coverage.svg)](https://gustavokimura.github.io/findash-suite/)
+  [![Cobertura Backend](.github/badges/backend-coverage.svg)](https://github.com/GustavoKimura/findash-suite)
+  [![Angular](https://img.shields.io/badge/Angular-DD0031?style=for-the-badge&logo=angular&logoColor=white)](https://angular.dev/)
+  [![Java](https://img.shields.io/badge/Java-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white)](https://jdk.java.net/21/)
+  [![TailwindCSS](https://img.shields.io/badge/tailwindcss-%2338B2AC.svg?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
+</div>
 
-FinDash Suite é uma aplicação completa de gestão financeira pessoal focada em usabilidade e performance. Ela permite o controle detalhado de receitas e despesas, visualização gráfica de gastos por categoria e gerenciamento histórico de transações.
+## 🌐 Demonstração Online
 
-O sistema é um monorepo dividido em dois componentes principais para garantir escalabilidade e separação de responsabilidades:
-- **Frontend:** Desenvolvido em Angular 18+ com Tailwind CSS e Chart.js.
-- **Backend:** Desenvolvido em Java 21 com Jakarta EE 10, WildFly e PostgreSQL.
+Acesse a aplicação aqui: **[FinDash Suite no GitHub Pages](https://gustavokimura.github.io/findash-suite/)**
 
-## Funcionalidades
-- Cadastro e autenticação segura de usuários utilizando JWT
-- Painel interativo com resumo financeiro (saldo, receitas, despesas)
-- Gráfico interativo em tempo real de despesas segmentadas por categoria
-- Gerenciamento completo de transações (Adicionar, Editar, Remover)
-- Interface totalmente responsiva (Mobile First)
+## 🚀 Funcionalidades
 
-## Estrutura do Projeto
-- `/frontend`: Aplicação SPA focada em experiência do usuário e alta interatividade.
-- `/backend`: API RESTful focada em processamento seguro e integridade de dados.
+- 🔒 **Autenticação Segura:** Sistema de login e registro baseado em JWT.
+- 💰 **Gestão de Transações:** Adicione, edite e remova receitas ou despesas facilmente.
+- 📈 **Dashboards Interativos:** Insights visuais com gráficos dinâmicos alimentados por Chart.js.
+- 📱 **Design Responsivo:** Interface Mobile-First otimizada para todos os tamanhos de tela.
+- ⚡ **Alta Performance:** API REST leve rodando em WildFly com um frontend Angular veloz.
 
-## Como Executar Localmente
+## 🛠️ Tecnologias Utilizadas
+
+### Frontend
+- **Framework:** Angular 21+ (Standalone Components, Signals)
+- **Estilização:** Tailwind CSS
+- **Gráficos:** ng2-charts / Chart.js
+- **Testes:** Vitest & Testing Library
+
+### Backend
+- **Linguagem:** Java 21
+- **Framework:** Jakarta EE 11 (JAX-RS, JPA, CDI)
+- **Servidor:** WildFly 35
+- **Banco de Dados:** PostgreSQL
+- **Segurança:** Nimbus JOSE JWT, jBCrypt
+- **Testes:** JUnit 5, Mockito, AssertJ, JaCoCo
+
+## ⚙️ Como Começar
 
 ### Pré-requisitos
-- Node.js 24+
-- Java 21 (JDK)
-- Maven 3.9+
-- Servidor PostgreSQL (Porta `5432` com banco `findashdb`)
+- [Node.js 24+](https://nodejs.org/)
+- [Java 21 (JDK)](https://jdk.java.net/21/)
+- [Maven 3.9+](https://maven.apache.org/)
+- Banco de dados PostgreSQL (`findashdb`) rodando na porta `5432`
 
-### Iniciando a API (Backend)
-```bash
+### Configurando o Backend
+```powershell
 cd backend
 mvn clean package
 mvn wildfly:run
 ```
 
-### Iniciando a Interface (Frontend)
-```bash
+###  Configurando o Frontend
+```powershell
 cd frontend
 npm install
 npm start
 ```
 
-Após iniciar os serviços, o frontend estará acessível em `http://localhost:4200` e a API rodará em `http://localhost:8080/api`.
+## 🧪 Executando Testes
+
+- Frontend: `npm run test:coverage`
+- Backend: `mvn test`
