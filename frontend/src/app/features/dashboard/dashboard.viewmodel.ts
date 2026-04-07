@@ -1,0 +1,130 @@
+import { Injectable, computed, inject, signal } from '@angular/core';
+import { FormBuilder, Validators } from '@angular/forms';
+import { TransactionService } from '../../core/services/transaction.service';
+import { AuthService } from '../../core/services/auth.service';
+import {
+  Transaction,
+  TransactionCategory,
+  TransactionType,
+  TRANSACTION_CATEGORIES,
+} from '../../core/models/transaction.model';
+import { ChartConfiguration, ChartOptions } from 'chart.js';
+
+@Injectable()
+export class DashboardViewModel {
+  private transactionService = inject(TransactionService);
+  private authService = inject(AuthService);
+  private fb = inject(FormBuilder);
+
+  public categories = TRANSACTION_CATEGORIES;
+
+  public form = this.fb.group({
+    id: [null as string | null],
+    description: ['', Validators.required],
+    amount: [
+      null as number | null,
+      [Validators.required, Validators.min(0.01)],
+    ],
+    type: ['Despesa' as TransactionType, Validators.required],
+    category: [this.categories[0] as TransactionCategory, Validators.required],
+    date: [new Date().toISOString().substring(0, 10), Validators.required],
+  });
+
+  public isModalOpen = signal(false);
+  public editingTransaction = signal<Transaction | null>(null);
+
+  public totalIncome = this.transactionService.totalIncome;
+  public totalExpenses = this.transactionService.totalExpenses;
+  public balance = this.transactionService.balance;
+  public sortedTransactions = this.transactionService.transactions;
+  public isLoading = this.transactionService.isLoading;
+  public username = computed(() => this.authService.getUsername());
+
+  public chartData = computed((): ChartConfiguration<'doughnut'>['data'] => {
+    const expenses = this.transactionService.expensesByCategory();
+    return {
+      labels: Object.keys(expenses),
+      datasets: [
+        {
+          data: Object.values(expenses),
+          backgroundColor: [
+            '#FF6384',
+            '#36A2EB',
+            '#FFCE56',
+            '#4BC0C0',
+            '#9966FF',
+            '#FF9F40',
+            '#C9CBCF',
+            '#7C4DFF',
+          ],
+          borderColor: '#1F2937',
+          borderWidth: 2,
+          hoverBorderColor: '#374151',
+        },
+      ],
+    };
+  });
+
+  public chartOptions: ChartOptions<'doughnut'> = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        display: true,
+        position: 'bottom',
+        labels: {
+          color: '#D1D5DB',
+          padding: 10,
+          font: { size: 10 },
+        },
+      },
+    },
+    cutout: '60%',
+  };
+
+  public openAddModal(): void {
+    this.form.reset({
+      id: null,
+      description: '',
+      amount: null,
+      type: 'Despesa',
+      category: this.categories[0] as TransactionCategory,
+      date: new Date().toISOString().substring(0, 10),
+    });
+    this.editingTransaction.set(null);
+    this.isModalOpen.set(true);
+  }
+
+  public openEditModal(transaction: Transaction): void {
+    this.form.patchValue(transaction);
+    this.editingTransaction.set(transaction);
+    this.isModalOpen.set(true);
+  }
+
+  public closeModal(): void {
+    this.isModalOpen.set(false);
+    this.editingTransaction.set(null);
+  }
+
+  public submit(): void {
+    if (this.form.invalid) return;
+
+    const value = this.form.value as unknown as Transaction;
+
+    if (this.editingTransaction()) {
+      this.transactionService.updateTransaction(value);
+    } else {
+      this.transactionService.addTransaction(value);
+    }
+
+    this.closeModal();
+  }
+
+  public delete(id: string): void {
+    this.transactionService.deleteTransaction(id);
+  }
+
+  public logout(): void {
+    this.authService.logout();
+  }
+}

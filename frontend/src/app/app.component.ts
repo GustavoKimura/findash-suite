@@ -1,8 +1,8 @@
 import { Component, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { HealthCheckService } from './core/health-check.service';
-import { ApiLoadingComponent } from './shared/api-loading/api-loading.component';
+import { HealthCheckService } from './core/services/health-check.service';
+import { ApiLoadingComponent } from './shared/components/api-loading/api-loading.component';
 
 @Component({
   selector: 'app-root',

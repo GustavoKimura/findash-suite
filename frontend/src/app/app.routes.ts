@@ -1,8 +1,8 @@
 import { Routes } from '@angular/router';
-import { DashboardComponent } from './dashboard/dashboard.component';
-import { AuthComponent } from './auth/auth.component';
-import { authGuard } from './core/auth.guard';
-import { guestGuard } from './core/guest.guard';
+import { DashboardComponent } from './features/dashboard/dashboard.component';
+import { AuthComponent } from './features/auth/auth.component';
+import { authGuard } from './core/guards/auth.guard';
+import { guestGuard } from './core/guards/guest.guard';
 
 export const routes: Routes = [
   {

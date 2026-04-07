@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { AppComponent } from './app.component';
-import { HealthCheckService } from './core/health-check.service';
+import { HealthCheckService } from './core/services/health-check.service';
 import { signal } from '@angular/core';
 import { describe, beforeEach, it, expect } from 'vitest';
 
