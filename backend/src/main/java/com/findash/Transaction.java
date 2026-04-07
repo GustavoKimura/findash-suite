@@ -1,22 +1,25 @@
 package com.findash;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
+
+import com.findash.common.BaseEntity;
 import com.findash.user.User;
+
 import jakarta.json.bind.annotation.JsonbTransient;
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
-import java.math.BigDecimal;
-import java.time.LocalDate;
 
 @Entity
 @Table(name = "transactions")
-public class Transaction {
-  @Id
-  @Size(min = 36, max = 36)
-  private String id;
-
+public class Transaction extends BaseEntity {
   @NotBlank
   private String type;
 
@@ -38,14 +41,6 @@ public class Transaction {
   @JoinColumn(name = "user_id", nullable = false)
   @JsonbTransient
   private User user;
-
-  public String getId() {
-    return id;
-  }
-
-  public void setId(String id) {
-    this.id = id;
-  }
 
   public String getType() {
     return type;

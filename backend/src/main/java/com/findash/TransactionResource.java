@@ -1,59 +1,44 @@
 package com.findash;
 
-import com.findash.security.Secured;
-import com.findash.user.User;
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.NoResultException;
-import jakarta.persistence.PersistenceContext;
-import jakarta.transaction.Transactional;
-import jakarta.ws.rs.*;
-import jakarta.ws.rs.core.Context;
-import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response;
-import jakarta.ws.rs.core.SecurityContext;
-
 import java.util.List;
 import java.util.UUID;
+
+import com.findash.common.BaseResource;
+import com.findash.security.Secured;
+import com.findash.user.User;
+
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.transaction.Transactional;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.DELETE;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.PUT;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 
 @Path("/transactions")
 @ApplicationScoped
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @Secured
-public class TransactionResource {
-
-  @PersistenceContext
-  private EntityManager em;
-
-  @Context
-  private SecurityContext securityContext;
-
-  private User getCurrentUser() {
-    String username = securityContext.getUserPrincipal().getName();
-    try {
-      return em.createQuery("SELECT u FROM User u WHERE u.username = :username", User.class)
-          .setParameter("username", username)
-          .getSingleResult();
-    } catch (NoResultException e) {
-      throw new WebApplicationException("User not found", Response.Status.UNAUTHORIZED);
-    }
-  }
+public class TransactionResource extends BaseResource {
 
   @GET
   public List<Transaction> getAll() {
-    User user = getCurrentUser();
     return em.createQuery("SELECT t FROM Transaction t WHERE t.user = :user ORDER BY t.date DESC", Transaction.class)
-        .setParameter("user", user)
+        .setParameter("user", getCurrentUser())
         .getResultList();
   }
 
   @POST
   @Transactional
   public Response create(Transaction transaction) {
-    User user = getCurrentUser();
     transaction.setId(UUID.randomUUID().toString());
-    transaction.setUser(user);
+    transaction.setUser(getCurrentUser());
     em.persist(transaction);
     return Response.status(Response.Status.CREATED).entity(transaction).build();
   }

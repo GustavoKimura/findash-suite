@@ -1,30 +1,22 @@
 package com.findash.auth;
 
-import com.findash.user.User;
 import com.findash.security.PasswordService;
+import com.findash.user.User;
+import com.findash.common.BaseResource;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
-import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
-import jakarta.ws.rs.Consumes;
-import jakarta.ws.rs.POST;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
-
 import java.util.UUID;
 
 @Path("/auth")
 @ApplicationScoped
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public class AuthResource {
-
-  @PersistenceContext
-  private EntityManager em;
+public class AuthResource extends BaseResource {
 
   @Inject
   private PasswordService passwordService;
@@ -39,22 +31,19 @@ public class AuthResource {
     if (!registerRequest.getPassword().equals(registerRequest.getRepeatPassword())) {
       return Response.status(Response.Status.BAD_REQUEST).entity("{\"error\":\"As senhas não coincidem\"}").build();
     }
-
-    long count = em.createQuery("SELECT COUNT(u) FROM User u WHERE LOWER(u.username) = LOWER(:username)", Long.class)
-        .setParameter("username", registerRequest.getUsername())
-        .getSingleResult();
-
-    if (count > 0) {
-      return Response.status(Response.Status.CONFLICT).entity("{\"error\":\"Nome de usuário já existe\"}").build();
+    try {
+      em.createQuery("SELECT u FROM User u WHERE u.username = :username", User.class)
+          .setParameter("username", registerRequest.getUsername())
+          .getSingleResult();
+      return Response.status(Response.Status.CONFLICT).entity("{\"error\":\"Usuário já existe\"}").build();
+    } catch (NoResultException e) {
+      User user = new User();
+      user.setId(UUID.randomUUID().toString());
+      user.setUsername(registerRequest.getUsername());
+      user.setPassword(passwordService.hashPassword(registerRequest.getPassword()));
+      em.persist(user);
+      return Response.status(Response.Status.CREATED).build();
     }
-
-    User newUser = new User();
-    newUser.setId(UUID.randomUUID().toString());
-    newUser.setUsername(registerRequest.getUsername());
-    newUser.setPassword(passwordService.hashPassword(registerRequest.getPassword()));
-    em.persist(newUser);
-
-    return Response.status(Response.Status.CREATED).build();
   }
 
   @POST
@@ -69,13 +58,10 @@ public class AuthResource {
       if (passwordService.checkPassword(loginRequest.getPassword(), user.getPassword())) {
         String token = tokenService.generateToken(user.getUsername());
         return Response.ok(new AuthResponse(token, user.getUsername())).build();
-      } else {
-        return Response.status(Response.Status.UNAUTHORIZED).entity("{\"error\":\"Usuário ou senha inválidos\"}")
-            .build();
       }
-    } catch (NoResultException e) {
-      return Response.status(Response.Status.UNAUTHORIZED).entity("{\"error\":\"Usuário ou senha inválidos\"}")
-          .build();
+    } catch (NoResultException ignored) {
     }
+
+    return Response.status(Response.Status.UNAUTHORIZED).entity("{\"error\":\"Credenciais inválidas\"}").build();
   }
 }

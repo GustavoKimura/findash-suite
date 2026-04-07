@@ -1,19 +1,21 @@
 package com.findash.user;
 
+import java.util.List;
+
 import com.findash.Transaction;
-import jakarta.persistence.*;
+import com.findash.common.BaseEntity;
+
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
-import java.util.List;
-
 @Entity
 @Table(name = "users")
-public class User {
-  @Id
-  @Size(min = 36, max = 36)
-  private String id;
-
+public class User extends BaseEntity {
   @NotBlank
   @Size(max = 50)
   @Column(unique = true, nullable = false)
@@ -26,14 +28,6 @@ public class User {
 
   @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<Transaction> transactions;
-
-  public String getId() {
-    return id;
-  }
-
-  public void setId(String id) {
-    this.id = id;
-  }
 
   public String getUsername() {
     return username;
