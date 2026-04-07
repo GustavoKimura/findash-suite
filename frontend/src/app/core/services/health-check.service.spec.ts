@@ -20,6 +20,7 @@ describe('HealthCheckService', () => {
 
   afterEach(() => {
     httpMock.verify();
+    vi.restoreAllMocks();
   });
 
   it('should set isApiReady to true on successful check', () => {
@@ -34,7 +35,9 @@ describe('HealthCheckService', () => {
   });
 
   it('should handle error and retry, ultimately returning null', async () => {
+    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
     vi.useFakeTimers();
+
     service = TestBed.inject(HealthCheckService);
     httpMock = TestBed.inject(HttpTestingController);
 
@@ -45,6 +48,11 @@ describe('HealthCheckService', () => {
     }
 
     expect(service.isApiReady()).toBe(false);
+    expect(consoleSpy).toHaveBeenCalledWith(
+      'API is not responding after multiple retries.',
+      expect.any(Object),
+    );
+
     vi.useRealTimers();
   });
 });
