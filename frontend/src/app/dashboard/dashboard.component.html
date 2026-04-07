@@ -2,39 +2,48 @@
   class="bg-gray-900 text-gray-200 h-screen flex flex-col font-sans p-2 sm:p-4 overflow-hidden"
 >
   <div class="max-w-7xl mx-auto flex flex-col w-full h-full">
-    <header class="mb-4 shrink-0 flex justify-between items-center">
-      <h1 class="text-2xl sm:text-3xl font-bold text-white">FinDash</h1>
-      <div class="flex items-center space-x-4">
-        <div class="text-right hidden sm:block">
-          <p class="text-sm text-gray-400">Bem-vindo(a),</p>
-          <p class="font-semibold text-white">{{ vm.username() }}</p>
-        </div>
-        <button
-          (click)="vm.openAddModal()"
-          class="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg shadow-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-75 cursor-pointer"
-        >
-          Adicionar Transação
-        </button>
-        <button
-          (click)="vm.logout()"
-          title="Sair"
-          class="p-2 bg-gray-700 hover:bg-red-600 text-white font-semibold rounded-full shadow-md text-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-75 cursor-pointer"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            class="h-5 w-5"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            stroke-width="2"
+    <header class="mb-4 shrink-0">
+      <div class="flex justify-between items-center">
+        <h1 class="text-2xl sm:text-3xl font-bold text-white">FinDash</h1>
+        <div class="flex items-center space-x-2 sm:space-x-4">
+          <p class="hidden sm:block text-gray-300 text-sm">
+            Boas-vindas,
+            <span class="font-semibold text-white">{{ vm.username() }}</span>
+          </p>
+          <button
+            (click)="vm.openAddModal()"
+            class="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg shadow-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-75 cursor-pointer"
           >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
-            />
-          </svg>
-        </button>
+            <span class="hidden sm:inline">Adicionar Transação</span>
+            <span class="sm:hidden">Adicionar</span>
+          </button>
+          <button
+            (click)="vm.logout()"
+            title="Sair"
+            class="p-2 bg-gray-700 hover:bg-red-600 text-white font-semibold rounded-full shadow-md text-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-75 cursor-pointer"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-5 w-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+              />
+            </svg>
+          </button>
+        </div>
+      </div>
+      <div class="sm:hidden mt-2">
+        <p class="text-gray-300 text-sm">
+          Boas-vindas,
+          <span class="font-semibold text-white">{{ vm.username() }}</span>
+        </p>
       </div>
     </header>
 

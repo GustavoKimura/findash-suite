@@ -50,6 +50,7 @@ export class AuthComponent {
         this.errorMessage.set(
           err.error?.error || 'Erro ao tentar fazer login. Tente novamente.',
         );
+        this.loginForm.get('password')?.reset();
         this.isLoading.set(false);
       },
       complete: () => this.isLoading.set(false),
@@ -63,6 +64,8 @@ export class AuthComponent {
       this.registerForm.value.repeatPassword
     ) {
       this.errorMessage.set('As senhas não coincidem.');
+      this.registerForm.get('password')?.reset();
+      this.registerForm.get('repeatPassword')?.reset();
       return;
     }
 
@@ -72,13 +75,17 @@ export class AuthComponent {
 
     this.authService.register(username!, password!, repeatPassword!).subscribe({
       next: () => {
+        const registeredUsername = this.registerForm.get('username')?.value;
         this.toggleView();
-        this.loginForm.patchValue({ username: username });
+        this.loginForm.patchValue({ username: registeredUsername });
+        this.registerForm.reset();
       },
       error: (err: HttpErrorResponse) => {
         this.errorMessage.set(
           err.error?.error || 'Erro ao registrar. Tente novamente.',
         );
+        this.registerForm.get('password')?.reset();
+        this.registerForm.get('repeatPassword')?.reset();
         this.isLoading.set(false);
       },
       complete: () => this.isLoading.set(false),
