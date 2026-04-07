@@ -37,8 +37,9 @@ export class CurrencyMaskDirective implements ControlValueAccessor {
   @HostListener('input', ['$event'])
   onInput(event: Event): void {
     const inputElement = event.target as HTMLInputElement;
+
     const rawValue = this.unformat(inputElement.value);
-    const numericValue = rawValue ? parseInt(rawValue, 10) / 100 : null;
+    const numericValue = rawValue ? parseInt(rawValue, 10) / 100 : 0;
 
     inputElement.value = this.format(numericValue);
     this.onChange(numericValue);
@@ -50,11 +51,11 @@ export class CurrencyMaskDirective implements ControlValueAccessor {
   }
 
   private format(value: number | null): string {
-    if (value === null || value === undefined) return '';
+    const validValue = value === null || value === undefined ? 0 : value;
     return new Intl.NumberFormat('pt-BR', {
       style: 'currency',
       currency: 'BRL',
-    }).format(value);
+    }).format(validValue);
   }
 
   private unformat(value: string): string {

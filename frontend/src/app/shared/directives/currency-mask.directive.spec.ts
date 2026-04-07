@@ -43,6 +43,15 @@ describe('CurrencyMaskDirective', () => {
     expect(component.value).toBe(1234.56);
   });
 
+  it('should format empty or null to 0', async () => {
+    inputEl.value = '';
+    inputEl.dispatchEvent(new Event('input'));
+    fixture.detectChanges();
+    await fixture.whenStable();
+    expect(component.value).toBe(0);
+    expect(inputEl.value.replace(/\s/g, ' ')).toContain('0,00');
+  });
+
   it('should handle blur event properly', () => {
     inputEl.dispatchEvent(new Event('blur'));
     expect(inputEl.classList).toBeDefined();

@@ -71,6 +71,7 @@ export class AuthViewModel {
     if (this.loginForm.invalid) return;
     this.isLoading.set(true);
     this.errorMessage.set(null);
+
     const { username, password } = this.loginForm.value;
     this.authService.login(username!, password!).subscribe({
       next: () => {
@@ -92,10 +93,12 @@ export class AuthViewModel {
     this.isLoading.set(true);
     this.errorMessage.set(null);
     const { username, password, repeatPassword } = this.registerForm.value;
+
     this.authService.register(username!, password!, repeatPassword!).subscribe({
       next: () => {
         this.isLoading.set(false);
         this.toggleView();
+        this.loginForm.patchValue({ username });
       },
       error: () => {
         this.isLoading.set(false);

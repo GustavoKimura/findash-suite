@@ -21,10 +21,7 @@ export class DashboardViewModel {
   public form = this.fb.group({
     id: [null as string | null],
     description: ['', Validators.required],
-    amount: [
-      null as number | null,
-      [Validators.required, Validators.min(0.01)],
-    ],
+    amount: [0 as number | null, [Validators.required, Validators.min(0.01)]],
     type: ['Despesa' as TransactionType, Validators.required],
     category: [this.categories[0] as TransactionCategory, Validators.required],
     date: [new Date().toISOString().substring(0, 10), Validators.required],
@@ -86,7 +83,7 @@ export class DashboardViewModel {
     this.form.reset({
       id: null,
       description: '',
-      amount: null,
+      amount: 0,
       type: 'Despesa',
       category: this.categories[0] as TransactionCategory,
       date: new Date().toISOString().substring(0, 10),

@@ -48,42 +48,67 @@
               placeholder="Seu usuário"
             />
           </div>
-          <div class="relative">
+          <div>
             <label class="block text-sm font-medium text-gray-300 mb-1"
               >Senha</label
             >
-            <input
-              [type]="vm.loginPasswordVisible() ? 'text' : 'password'"
-              formControlName="password"
-              class="w-full bg-gray-900/50 border border-gray-700 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all placeholder-gray-600"
-              placeholder="••••••••"
-            />
-            <button
-              type="button"
-              (click)="vm.toggleLoginPasswordVisibility()"
-              class="absolute right-4 top-9 text-gray-400 hover:text-white transition-colors"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                class="h-5 w-5"
-                viewBox="0 0 20 20"
-                fill="currentColor"
+            <div class="relative">
+              <input
+                [type]="vm.loginPasswordVisible() ? 'text' : 'password'"
+                formControlName="password"
+                class="w-full bg-gray-900/50 border border-gray-700 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all placeholder-gray-600"
+                placeholder="••••••••"
+              />
+              <button
+                type="button"
+                (click)="vm.toggleLoginPasswordVisibility()"
+                class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition-colors cursor-pointer"
               >
-                <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
-                <path
-                  fill-rule="evenodd"
-                  d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z"
-                  clip-rule="evenodd"
-                />
-              </svg>
-            </button>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-5 w-5"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
+                  <path
+                    fill-rule="evenodd"
+                    d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z"
+                    clip-rule="evenodd"
+                  />
+                </svg>
+              </button>
+            </div>
           </div>
           <button
             type="submit"
             [disabled]="vm.loginForm.invalid || vm.isLoading()"
-            class="w-full py-3 px-4 bg-linear-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 text-white rounded-xl font-semibold shadow-lg shadow-blue-500/30 transform transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed mt-4"
+            class="w-full py-3 px-4 bg-linear-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 text-white rounded-xl font-semibold shadow-lg shadow-blue-500/30 transform transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer mt-4"
           >
-            {{ vm.isLoading() ? "Entrando..." : "Entrar" }}
+            @if (vm.isLoading()) {
+              <svg
+                class="animate-spin h-5 w-5 mx-auto text-white"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  class="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  stroke-width="4"
+                ></circle>
+                <path
+                  class="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                ></path>
+              </svg>
+            } @else {
+              Entrar
+            }
           </button>
         </form>
       } @else {
@@ -103,80 +128,115 @@
               placeholder="Escolha um usuário"
             />
           </div>
-          <div class="relative">
+          <div>
             <label class="block text-sm font-medium text-gray-300 mb-1"
               >Senha</label
             >
-            <input
-              [type]="vm.registerPasswordVisible() ? 'text' : 'password'"
-              formControlName="password"
-              class="w-full bg-gray-900/50 border border-gray-700 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all placeholder-gray-600"
-              placeholder="Mínimo 6 caracteres"
-            />
-            <button
-              type="button"
-              (click)="vm.toggleRegisterPasswordVisibility()"
-              class="absolute right-4 top-9 text-gray-400 hover:text-white transition-colors"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                class="h-5 w-5"
-                viewBox="0 0 20 20"
-                fill="currentColor"
+            <div class="relative">
+              <input
+                [type]="vm.registerPasswordVisible() ? 'text' : 'password'"
+                formControlName="password"
+                class="w-full bg-gray-900/50 border border-gray-700 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all placeholder-gray-600"
+                placeholder="Mínimo 6 caracteres"
+              />
+              <button
+                type="button"
+                (click)="vm.toggleRegisterPasswordVisibility()"
+                class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition-colors cursor-pointer"
               >
-                <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
-                <path
-                  fill-rule="evenodd"
-                  d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z"
-                  clip-rule="evenodd"
-                />
-              </svg>
-            </button>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-5 w-5"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
+                  <path
+                    fill-rule="evenodd"
+                    d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z"
+                    clip-rule="evenodd"
+                  />
+                </svg>
+              </button>
+            </div>
+            @if (
+              vm.registerForm.get("password")?.hasError("minlength") &&
+              vm.registerForm.get("password")?.touched
+            ) {
+              <p class="text-red-400 text-xs mt-1">
+                A senha deve conter no mínimo 6 caracteres.
+              </p>
+            }
           </div>
-          <div class="relative">
+          <div>
             <label class="block text-sm font-medium text-gray-300 mb-1"
               >Confirmar Senha</label
             >
-            <input
-              [type]="vm.registerRepeatPasswordVisible() ? 'text' : 'password'"
-              formControlName="repeatPassword"
-              class="w-full bg-gray-900/50 border border-gray-700 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all placeholder-gray-600"
-              placeholder="Repita a senha"
-            />
-            <button
-              type="button"
-              (click)="vm.toggleRegisterRepeatPasswordVisibility()"
-              class="absolute right-4 top-9 text-gray-400 hover:text-white transition-colors"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                class="h-5 w-5"
-                viewBox="0 0 20 20"
-                fill="currentColor"
+            <div class="relative">
+              <input
+                [type]="
+                  vm.registerRepeatPasswordVisible() ? 'text' : 'password'
+                "
+                formControlName="repeatPassword"
+                class="w-full bg-gray-900/50 border border-gray-700 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all placeholder-gray-600"
+                placeholder="Repita a senha"
+              />
+              <button
+                type="button"
+                (click)="vm.toggleRegisterRepeatPasswordVisibility()"
+                class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition-colors cursor-pointer"
               >
-                <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
-                <path
-                  fill-rule="evenodd"
-                  d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z"
-                  clip-rule="evenodd"
-                />
-              </svg>
-            </button>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-5 w-5"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
+                  <path
+                    fill-rule="evenodd"
+                    d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z"
+                    clip-rule="evenodd"
+                  />
+                </svg>
+              </button>
+            </div>
             @if (
               vm.registerForm.hasError("passwordMismatch") &&
               vm.registerForm.get("repeatPassword")?.touched
             ) {
-              <p class="text-red-400 text-xs mt-1 absolute -bottom-5">
-                As senhas não coincidem.
-              </p>
+              <p class="text-red-400 text-xs mt-1">As senhas não coincidem.</p>
             }
           </div>
           <button
             type="submit"
             [disabled]="vm.registerForm.invalid || vm.isLoading()"
-            class="w-full py-3 px-4 bg-linear-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white rounded-xl font-semibold shadow-lg shadow-emerald-500/30 transform transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed mt-6"
+            class="w-full py-3 px-4 bg-linear-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white rounded-xl font-semibold shadow-lg shadow-emerald-500/30 transform transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer mt-6"
           >
-            {{ vm.isLoading() ? "Registrando..." : "Criar Conta" }}
+            @if (vm.isLoading()) {
+              <svg
+                class="animate-spin h-5 w-5 mx-auto text-white"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  class="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  stroke-width="4"
+                ></circle>
+                <path
+                  class="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                ></path>
+              </svg>
+            } @else {
+              Criar Conta
+            }
           </button>
         </form>
       }
@@ -186,7 +246,7 @@
           {{ vm.isLoginView() ? "Não tem uma conta?" : "Já possui uma conta?" }}
           <button
             (click)="vm.toggleView()"
-            class="font-semibold text-blue-400 hover:text-blue-300 transition-colors ml-1 focus:outline-none"
+            class="font-semibold text-blue-400 hover:text-blue-300 transition-colors ml-1 focus:outline-none cursor-pointer"
           >
             {{ vm.isLoginView() ? "Registre-se" : "Faça login" }}
           </button>

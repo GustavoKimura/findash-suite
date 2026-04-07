@@ -108,6 +108,7 @@ describe('AuthViewModel', () => {
       'password',
     );
     expect(vm.isLoginView()).toBe(false);
+    expect(vm.loginForm.value.username).toBe('test');
   });
 
   it('should handle register error', () => {
