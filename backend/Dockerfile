@@ -10,7 +10,8 @@ RUN mvn package -DskipTests
 FROM quay.io/wildfly/wildfly:35.0.1.Final-jdk21
 
 USER root
-RUN curl -L -o /tmp/postgresql.jar https://jdbc.postgresql.org/download/postgresql-42.7.3.jar
+RUN curl -L -o /tmp/postgresql.jar https://jdbc.postgresql.org/download/postgresql-42.7.3.jar && \
+  chown jboss:jboss /tmp/postgresql.jar
 
 USER jboss
 RUN echo "embed-server --server-config=standalone.xml --std-out=echo" > /tmp/setup.cli && \

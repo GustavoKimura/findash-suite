@@ -44,7 +44,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: "./frontend/findash-ui/dist/findash-ui/browser"
+          path: "./frontend/findash-ui/dist/findash/browser"
 
       - name: Deploy to GitHub Pages
         id: deployment
