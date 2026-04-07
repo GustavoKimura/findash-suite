@@ -37,7 +37,7 @@ public class AuthResource {
   @Transactional
   public Response register(RegisterRequest registerRequest) {
     if (!registerRequest.getPassword().equals(registerRequest.getRepeatPassword())) {
-      return Response.status(Response.Status.BAD_REQUEST).entity("{\"error\":\"Passwords do not match\"}").build();
+      return Response.status(Response.Status.BAD_REQUEST).entity("{\"error\":\"As senhas não coincidem\"}").build();
     }
 
     long count = em.createQuery("SELECT COUNT(u) FROM User u WHERE u.username = :username", Long.class)
@@ -45,7 +45,7 @@ public class AuthResource {
         .getSingleResult();
 
     if (count > 0) {
-      return Response.status(Response.Status.CONFLICT).entity("{\"error\":\"Username already exists\"}").build();
+      return Response.status(Response.Status.CONFLICT).entity("{\"error\":\"Nome de usuário já existe\"}").build();
     }
 
     User newUser = new User();
@@ -70,11 +70,11 @@ public class AuthResource {
         String token = tokenService.generateToken(user.getUsername());
         return Response.ok(new AuthResponse(token, user.getUsername())).build();
       } else {
-        return Response.status(Response.Status.UNAUTHORIZED).entity("{\"error\":\"Invalid username or password\"}")
+        return Response.status(Response.Status.UNAUTHORIZED).entity("{\"error\":\"Usuário ou senha inválidos\"}")
             .build();
       }
     } catch (NoResultException e) {
-      return Response.status(Response.Status.UNAUTHORIZED).entity("{\"error\":\"Invalid username or password\"}")
+      return Response.status(Response.Status.UNAUTHORIZED).entity("{\"error\":\"Usuário ou senha inválidos\"}")
           .build();
     }
   }

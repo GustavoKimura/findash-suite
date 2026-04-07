@@ -21,6 +21,10 @@ export class AuthComponent {
   isLoading = signal(false);
   errorMessage = signal<string | null>(null);
 
+  loginPasswordVisible = signal(false);
+  registerPasswordVisible = signal(false);
+  registerRepeatPasswordVisible = signal(false);
+
   loginForm = this.fb.group({
     username: ['', Validators.required],
     password: ['', Validators.required],
@@ -31,6 +35,20 @@ export class AuthComponent {
     password: ['', [Validators.required, Validators.minLength(6)]],
     repeatPassword: ['', Validators.required],
   });
+
+  toggleLoginPasswordVisibility(): void {
+    this.loginPasswordVisible.set(!this.loginPasswordVisible());
+  }
+
+  toggleRegisterPasswordVisibility(): void {
+    this.registerPasswordVisible.set(!this.registerPasswordVisible());
+  }
+
+  toggleRegisterRepeatPasswordVisibility(): void {
+    this.registerRepeatPasswordVisible.set(
+      !this.registerRepeatPasswordVisible(),
+    );
+  }
 
   toggleView(): void {
     this.errorMessage.set(null);
@@ -64,8 +82,6 @@ export class AuthComponent {
       this.registerForm.value.repeatPassword
     ) {
       this.errorMessage.set('As senhas não coincidem.');
-      this.registerForm.get('password')?.reset();
-      this.registerForm.get('repeatPassword')?.reset();
       return;
     }
 
