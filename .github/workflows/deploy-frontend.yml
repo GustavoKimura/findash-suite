@@ -22,7 +22,7 @@ jobs:
 
     defaults:
       run:
-        working-directory: ./frontend/findash-ui
+        working-directory: ./frontend
 
     steps:
       - name: Checkout
@@ -33,7 +33,7 @@ jobs:
         with:
           node-version: "24.x"
           cache: "npm"
-          cache-dependency-path: "./frontend/findash-ui/package-lock.json"
+          cache-dependency-path: "./frontend/package-lock.json"
 
       - name: Install dependencies
         run: npm ci
@@ -47,7 +47,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: "./frontend/findash-ui/dist/findash/browser"
+          path: "./frontend/dist/findash/browser"
 
       - name: Deploy to GitHub Pages
         id: deployment
