@@ -2,7 +2,7 @@ import { computed, Injectable, signal, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Transaction } from './transaction.model';
 import { environment } from '../../environments/environment';
-import { finalize } from 'rxjs';
+import { finalize, switchMap, Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -12,9 +12,7 @@ export class TransactionService {
   private apiUrl = environment.apiUrl + '/transactions';
 
   private transactionsState = signal<Transaction[]>([]);
-
-  public isFetching = signal(false);
-  public isMutating = signal(false);
+  public isLoading = signal(false);
 
   public transactions = this.transactionsState.asReadonly();
 
@@ -47,35 +45,59 @@ export class TransactionService {
     this.refresh();
   }
 
-  refresh(): void {
-    this.isFetching.set(true);
-    this.http
+  private fetchTransactions(): Observable<Transaction[]> {
+    return this.http
       .get<Transaction[]>(this.apiUrl)
-      .pipe(finalize(() => this.isFetching.set(false)))
-      .subscribe((transactions) => this.transactionsState.set(transactions));
+      .pipe(finalize(() => this.isLoading.set(false)));
+  }
+
+  refresh(): void {
+    this.isLoading.set(true);
+    this.fetchTransactions().subscribe({
+      next: (transactions) => this.transactionsState.set(transactions),
+      error: (err) => console.error('Failed to refresh transactions', err),
+    });
   }
 
   addTransaction(transaction: Omit<Transaction, 'id'>): void {
-    this.isMutating.set(true);
+    this.isLoading.set(true);
     this.http
       .post(this.apiUrl, transaction)
-      .pipe(finalize(() => this.isMutating.set(false)))
-      .subscribe(() => this.refresh());
+      .pipe(switchMap(() => this.fetchTransactions()))
+      .subscribe({
+        next: (transactions) => this.transactionsState.set(transactions),
+        error: (err) => {
+          console.error('Add transaction failed', err);
+          this.isLoading.set(false);
+        },
+      });
   }
 
   updateTransaction(updatedTransaction: Transaction): void {
-    this.isMutating.set(true);
+    this.isLoading.set(true);
     this.http
       .put(`${this.apiUrl}/${updatedTransaction.id}`, updatedTransaction)
-      .pipe(finalize(() => this.isMutating.set(false)))
-      .subscribe(() => this.refresh());
+      .pipe(switchMap(() => this.fetchTransactions()))
+      .subscribe({
+        next: (transactions) => this.transactionsState.set(transactions),
+        error: (err) => {
+          console.error('Update transaction failed', err);
+          this.isLoading.set(false);
+        },
+      });
   }
 
   deleteTransaction(id: string): void {
-    this.isMutating.set(true);
+    this.isLoading.set(true);
     this.http
       .delete(`${this.apiUrl}/${id}`)
-      .pipe(finalize(() => this.isMutating.set(false)))
-      .subscribe(() => this.refresh());
+      .pipe(switchMap(() => this.fetchTransactions()))
+      .subscribe({
+        next: (transactions) => this.transactionsState.set(transactions),
+        error: (err) => {
+          console.error('Delete transaction failed', err);
+          this.isLoading.set(false);
+        },
+      });
   }
 }

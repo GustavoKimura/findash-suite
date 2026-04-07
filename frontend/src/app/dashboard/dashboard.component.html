@@ -127,7 +127,7 @@
           <h3 class="text-base sm:text-lg font-semibold text-white">
             Transações Recentes
           </h3>
-          @if (vm.isFetching()) {
+          @if (vm.isLoading()) {
             <div
               class="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-blue-400"
             ></div>
@@ -176,7 +176,7 @@
                     <button
                       (click)="vm.openEditModal(transaction)"
                       class="text-blue-400 hover:text-blue-600 disabled:text-gray-500 disabled:cursor-not-allowed"
-                      [disabled]="vm.isMutating()"
+                      [disabled]="vm.isLoading()"
                     >
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -196,7 +196,7 @@
                     <button
                       (click)="vm.delete(transaction.id)"
                       class="text-red-500 hover:text-red-700 disabled:text-gray-500 disabled:cursor-not-allowed"
-                      [disabled]="vm.isMutating()"
+                      [disabled]="vm.isLoading()"
                     >
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -221,7 +221,7 @@
                     colspan="3"
                     class="px-6 py-12 text-center text-sm text-gray-500"
                   >
-                    @if (vm.isFetching()) {
+                    @if (vm.isLoading()) {
                       <span>Carregando transações...</span>
                     } @else {
                       <span>Nenhuma transação registrada.</span>
@@ -288,10 +288,10 @@
       <div class="flex justify-end pt-4 mt-2 border-t border-gray-700">
         <button
           type="submit"
-          [disabled]="vm.form.invalid || vm.isMutating()"
+          [disabled]="vm.form.invalid || vm.isLoading()"
           class="inline-flex items-center justify-center min-w-37.5 px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-500 text-white font-semibold rounded-lg shadow-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-75 cursor-pointer disabled:cursor-wait"
         >
-          @if (vm.isMutating()) {
+          @if (vm.isLoading()) {
             <svg
               class="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
               xmlns="http://www.w3.org/2000/svg"
