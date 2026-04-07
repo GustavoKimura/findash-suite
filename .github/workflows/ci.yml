@@ -1,0 +1,57 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches: ["main", "master"]
+  pull_request:
+    branches: ["main", "master"]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24.x"
+          cache: "npm"
+          cache-dependency-path: "./frontend/package-lock.json"
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: "temurin"
+          java-version: "21"
+          cache: "maven"
+
+      - run: npm ci
+        working-directory: ./frontend
+
+      - run: npm run test:coverage
+        working-directory: ./frontend
+
+      - run: mvn test
+        working-directory: ./backend
+
+      - run: |
+          mkdir -p .github/badges
+
+          if [ -f "./frontend/coverage/coverage-summary.json" ]; then
+            FRONTEND_COVERAGE=$(node -p "require('./frontend/coverage/coverage-summary.json').total.lines.pct")
+            FRONTEND_COLOR=$(node -p "const t = $FRONTEND_COVERAGE; t >= 80 ? 'brightgreen' : t >= 60 ? 'yellow' : 'red'")
+            curl -s "https://img.shields.io/badge/Frontend_Coverage-${FRONTEND_COVERAGE}%25-${FRONTEND_COLOR}" > .github/badges/frontend-coverage.svg
+          fi
+
+          if [ -f "./backend/target/site/jacoco/jacoco.csv" ]; then
+            BACKEND_COVERAGE=$(awk -F, 'NR>1 {missed+=$4; covered+=$5} END {if (missed+covered>0) printf "%.2f", (covered/(missed+covered))*100; else print "0"}' ./backend/target/site/jacoco/jacoco.csv)
+            BACKEND_COLOR=$(node -p "const t = $BACKEND_COVERAGE; t >= 80 ? 'brightgreen' : t >= 60 ? 'yellow' : 'red'")
+            curl -s "https://img.shields.io/badge/Backend_Coverage-${BACKEND_COVERAGE}%25-${BACKEND_COLOR}" > .github/badges/backend-coverage.svg
+          fi
+
+      - if: github.event_name == 'push'
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "chore: update coverage badges"
+          file_pattern: ".github/badges/*.svg"
