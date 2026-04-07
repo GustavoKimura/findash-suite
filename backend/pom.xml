@@ -13,6 +13,8 @@
     <maven.compiler.release>21</maven.compiler.release>
     <jakartaee.version>11.0.0-M5</jakartaee.version>
     <version.wildfly.plugin>5.0.0.Final</version.wildfly.plugin>
+    <junit.version>5.10.3</junit.version>
+    <mockito.version>5.12.0</mockito.version>
   </properties>
   <dependencies>
     <dependency>
@@ -37,6 +39,37 @@
       <artifactId>nimbus-jose-jwt</artifactId>
       <version>9.37.3</version>
     </dependency>
+    <!-- Test dependencies -->
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-api</artifactId>
+      <version>${junit.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-engine</artifactId>
+      <version>${junit.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-core</artifactId>
+      <version>${mockito.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-junit-jupiter</artifactId>
+      <version>${mockito.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.assertj</groupId>
+      <artifactId>assertj-core</artifactId>
+      <version>3.26.3</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
   <build>
     <finalName>ROOT</finalName>
@@ -58,6 +91,11 @@
         <configuration>
           <version>35.0.1.Final</version>
         </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>3.5.0</version>
       </plugin>
     </plugins>
   </build>
