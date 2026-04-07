@@ -1,9 +1,31 @@
 import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  AbstractControl,
+  FormBuilder,
+  ReactiveFormsModule,
+  ValidationErrors,
+  ValidatorFn,
+  Validators,
+} from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../core/auth.service';
 import { HttpErrorResponse } from '@angular/common/http';
+
+export const passwordMatchValidator: ValidatorFn = (
+  control: AbstractControl,
+): ValidationErrors | null => {
+  const password = control.get('password');
+  const repeatPassword = control.get('repeatPassword');
+
+  if (!password || !repeatPassword || !repeatPassword.value) {
+    return null;
+  }
+
+  return password.value === repeatPassword.value
+    ? null
+    : { passwordMismatch: true };
+};
 
 @Component({
   selector: 'app-auth',
@@ -30,11 +52,22 @@ export class AuthComponent {
     password: ['', Validators.required],
   });
 
-  registerForm = this.fb.group({
-    username: ['', Validators.required],
-    password: ['', [Validators.required, Validators.minLength(6)]],
-    repeatPassword: ['', Validators.required],
-  });
+  registerForm = this.fb.group(
+    {
+      username: ['', Validators.required],
+      password: ['', [Validators.required, Validators.minLength(6)]],
+      repeatPassword: ['', Validators.required],
+    },
+    { validators: passwordMatchValidator },
+  );
+
+  get password() {
+    return this.registerForm.get('password');
+  }
+
+  get repeatPassword() {
+    return this.registerForm.get('repeatPassword');
+  }
 
   toggleLoginPasswordVisibility(): void {
     this.loginPasswordVisible.set(!this.loginPasswordVisible());
@@ -76,12 +109,8 @@ export class AuthComponent {
   }
 
   onRegister(): void {
-    if (this.registerForm.invalid) return;
-    if (
-      this.registerForm.value.password !==
-      this.registerForm.value.repeatPassword
-    ) {
-      this.errorMessage.set('As senhas não coincidem.');
+    if (this.registerForm.invalid) {
+      this.registerForm.markAllAsTouched();
       return;
     }
 
