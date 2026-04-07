@@ -40,7 +40,7 @@ public class AuthResource {
       return Response.status(Response.Status.BAD_REQUEST).entity("{\"error\":\"As senhas não coincidem\"}").build();
     }
 
-    long count = em.createQuery("SELECT COUNT(u) FROM User u WHERE u.username = :username", Long.class)
+    long count = em.createQuery("SELECT COUNT(u) FROM User u WHERE LOWER(u.username) = LOWER(:username)", Long.class)
         .setParameter("username", registerRequest.getUsername())
         .getSingleResult();
 
@@ -62,7 +62,7 @@ public class AuthResource {
   @Transactional
   public Response login(LoginRequest loginRequest) {
     try {
-      User user = em.createQuery("SELECT u FROM User u WHERE u.username = :username", User.class)
+      User user = em.createQuery("SELECT u FROM User u WHERE LOWER(u.username) = LOWER(:username)", User.class)
           .setParameter("username", loginRequest.getUsername())
           .getSingleResult();
 
