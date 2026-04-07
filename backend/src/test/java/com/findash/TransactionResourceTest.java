@@ -7,7 +7,6 @@ import jakarta.persistence.TypedQuery;
 import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.SecurityContext;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -46,23 +45,26 @@ public class TransactionResourceTest {
   @InjectMocks
   private TransactionResource transactionResource;
 
-  private User testUser;
-  private Transaction testTransaction;
+  private final User testUser = createTestUser();
+  private final Transaction testTransaction = createTestTransaction(testUser);
 
-  @BeforeEach
-  void setUp() {
-    testUser = new User();
-    testUser.setId("user-id");
-    testUser.setUsername("testuser");
+  private User createTestUser() {
+    User user = new User();
+    user.setId("user-id");
+    user.setUsername("testuser");
+    return user;
+  }
 
-    testTransaction = new Transaction();
-    testTransaction.setId("tx-id");
-    testTransaction.setAmount(new BigDecimal("100.00"));
-    testTransaction.setDescription("Test TX");
-    testTransaction.setCategory("Lazer");
-    testTransaction.setType("Despesa");
-    testTransaction.setDate(LocalDate.now());
-    testTransaction.setUser(testUser);
+  private Transaction createTestTransaction(User user) {
+    Transaction tx = new Transaction();
+    tx.setId("tx-id");
+    tx.setAmount(new BigDecimal("100.00"));
+    tx.setDescription("Test TX");
+    tx.setCategory("Lazer");
+    tx.setType("Despesa");
+    tx.setDate(LocalDate.now());
+    tx.setUser(user);
+    return tx;
   }
 
   private void mockSecurityContext() {
