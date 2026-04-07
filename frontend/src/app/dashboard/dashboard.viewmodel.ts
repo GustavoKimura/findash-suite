@@ -1,6 +1,7 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { TransactionService } from '../core/transaction.service';
+import { AuthService } from '../core/auth.service';
 import {
   Transaction,
   TransactionCategory,
@@ -12,6 +13,7 @@ import { ChartConfiguration, ChartOptions } from 'chart.js';
 @Injectable()
 export class DashboardViewModel {
   private transactionService = inject(TransactionService);
+  private authService = inject(AuthService);
   private fb = inject(FormBuilder);
 
   public categories = TRANSACTION_CATEGORIES;
@@ -36,6 +38,7 @@ export class DashboardViewModel {
   public balance = this.transactionService.balance;
   public sortedTransactions = this.transactionService.transactions;
   public isLoading = this.transactionService.isLoading;
+  public username = computed(() => this.authService.getUsername());
 
   public chartData = computed((): ChartConfiguration<'doughnut'>['data'] => {
     const expenses = this.transactionService.expensesByCategory();
@@ -134,5 +137,9 @@ export class DashboardViewModel {
 
   public delete(id: string): void {
     this.transactionService.deleteTransaction(id);
+  }
+
+  public logout(): void {
+    this.authService.logout();
   }
 }

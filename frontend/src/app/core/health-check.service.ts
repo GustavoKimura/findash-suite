@@ -9,7 +9,7 @@ import { catchError, retry, tap } from 'rxjs/operators';
 })
 export class HealthCheckService {
   private http = inject(HttpClient);
-  private healthCheckUrl = environment.apiUrl + '/transactions';
+  private healthCheckUrl = environment.apiUrl + '/health';
 
   public isApiReady = signal<boolean>(false);
 
@@ -19,7 +19,7 @@ export class HealthCheckService {
 
   private checkApiStatus(): void {
     this.http
-      .get(this.healthCheckUrl)
+      .get(this.healthCheckUrl, { responseType: 'text' })
       .pipe(
         tap(() => this.isApiReady.set(true)),
         retry({

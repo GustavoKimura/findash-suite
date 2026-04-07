@@ -7,7 +7,7 @@ services:
     plan: free
     dockerfilePath: ./backend/Dockerfile
     dockerContext: ./backend
-    healthCheckPath: /api/transactions
+    healthCheckPath: /api/health
     envVars:
       - fromDatabase:
           name: findashdb
@@ -25,6 +25,10 @@ services:
           name: findashdb
           property: password
         key: DB_PASSWORD
+      - key: JWT_ISSUER
+        value: findash-api
+      - key: JWT_SECRET
+        generateValue: true
     autoDeploy: true
 
 databases:
